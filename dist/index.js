@@ -355,7 +355,7 @@ function getFileCoverageFromPackages(packages, files) {
             return f.filePath.endsWith(`${packageName}/${name}`);
         });
         if (githubFile) {
-            const instruction = jacocoFile.counters.find(counter => counter.name === 'instruction');
+            const instruction = jacocoFile.counters.find(counter => counter.name === 'branch');
             if (instruction) {
                 const missed = instruction.missed;
                 const covered = instruction.covered;
@@ -380,10 +380,10 @@ function getFileCoverageFromPackages(packages, files) {
                     }
                 }
                 const changedMissed = lines
-                    .map(line => toFloat(line.instruction.missed))
+                    .map(line => toFloat(line.branch.missed))
                     .reduce(sumReducer, 0.0);
                 const changedCovered = lines
-                    .map(line => toFloat(line.instruction.covered))
+                    .map(line => toFloat(line.branch.covered))
                     .reduce(sumReducer, 0.0);
                 const changedPercentage = calculatePercentage(changedCovered, changedMissed);
                 const changedCoverage = changedPercentage !== null
@@ -437,12 +437,12 @@ function getTotalPercentage(files) {
 }
 function getModuleCoverage(report) {
     const counters = report.counter ?? [];
-    return getDetailedCoverage(counters, 'INSTRUCTION');
+    return getDetailedCoverage(counters, 'BRANCH');
 }
 function getOverallProjectCoverage(reports) {
     const coverages = reports.map(report => {
         const counters = report.counter ?? [];
-        return getDetailedCoverage(counters, 'INSTRUCTION');
+        return getDetailedCoverage(counters, 'BRANCH');
     });
     if (coverages.length === 0)
         return null;
